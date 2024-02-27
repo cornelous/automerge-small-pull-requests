@@ -25,6 +25,7 @@ async function run() {
     });
 
     if (!pullRequest.title.startsWith(prPrefix)) {
+      core.setFailed(`Pull request title does not start with "${pullRequest.title}}"`);
       core.setFailed(`Pull request title does not start with "${prPrefix}"`);
       return;
     }
