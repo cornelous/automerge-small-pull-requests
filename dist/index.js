@@ -44,9 +44,8 @@ async function run() {
             repo: github.context.repo.repo,
             pull_number: pullRequestNumber,
         });
-        if (!pullRequest.title.startsWith(prPrefix)) {
-            core.setFailed(`Pull request title does not start with "${pullRequest.title}}"`);
-            core.setFailed(`Pull request title does not start with "${prPrefix}"`);
+        if (!pullRequest.head.ref.startsWith(prPrefix)) {
+            core.warning(`Pull request title "${pullRequest.title}" does not start with "${prPrefix}". This pull request does not meet auto merging criteria.`);
             return;
         }
         const { data: files } = await octokit.pulls.listFiles({
