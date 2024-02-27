@@ -67,7 +67,7 @@ async function run() {
         //   pull_number: pullRequestNumber,
         // });
         // core.info('Pull request merged successfully');
-        const labelName = `Small pull request automatically created and merged to ${pullRequest.head.ref}`;
+        const labelName = "auto-merged";
         try {
             await octokit.issues.createLabel({
                 owner: github.context.repo.owner,
