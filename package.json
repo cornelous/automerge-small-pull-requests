@@ -1,0 +1,23 @@
+{
+  "name": "auto-merge-small-pull-request",
+  "version": "1.0.0",
+  "description": "Automatically merges a pull request if it meets certain conditions, creates a new pull request to a specified branch, and labels both pull requests",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "github-action"
+  ],
+  "author": "Clive Cornelous Banditi",
+  "license": "MIT",
+  "devDependencies": {
+    "@actions/core": "^1.4.0",
+    "@actions/github": "^3.0.0",
+    "@octokit/rest": "^20.0.2",
+    "@types/node": "^20.11.20",
+    "ts-node": "^10.9.2",
+    "typescript": "^4.9.5"
+  }
+}

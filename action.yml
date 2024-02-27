@@ -1,0 +1,24 @@
+name: 'Auto Merge Pull Request'
+description: 'Automatically merges a pull request if it meets certain conditions, creates a new pull request to a specified branch, and labels both pull requests'
+inputs:
+  github-token:
+    description: 'The GitHub token used to create an authenticated client'
+    required: true
+  max-files:
+    description: 'The maximum number of files that a pull request can change'
+    required: true
+  forbidden-directories:
+    description: 'A comma-separated list of directories that a pull request cannot change'
+    required: true
+  pr-prefix:
+    description: 'The prefix that the pull request title should start with'
+    required: true
+  merge-back-branch:
+    description: 'The branch that the pull request should be merged back to'
+    required: true
+branding:
+  icon: 'git-merge'
+  color: 'green'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'
