@@ -45,13 +45,13 @@ async function run() {
       return;
     }
 
-    await octokit.pulls.merge({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      pull_number: pullRequestNumber,
-    });
+    // await octokit.pulls.merge({
+    //   owner: github.context.repo.owner,
+    //   repo: github.context.repo.repo,
+    //   pull_number: pullRequestNumber,
+    // });
 
-    core.info('Pull request merged successfully');
+    // core.info('Pull request merged successfully');
 
     const labelName = `Small pull request automatically created and merged to ${pullRequest.head.ref}`;
 
@@ -70,12 +70,12 @@ async function run() {
         }
     }
 
-    await octokit.issues.addLabels({
-      owner: github.context.repo.owner,
-      repo: github.context.repo.repo,
-      issue_number: pullRequestNumber,
-      labels: [labelName],
-    });
+    // await octokit.issues.addLabels({
+    //   owner: github.context.repo.owner,
+    //   repo: github.context.repo.repo,
+    //   issue_number: pullRequestNumber,
+    //   labels: [labelName],
+    // });
 
     const { data: newPullRequest } = await octokit.pulls.create({
       owner: github.context.repo.owner,

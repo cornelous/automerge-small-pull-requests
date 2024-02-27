@@ -61,12 +61,12 @@ async function run() {
             core.setFailed('Pull request has changes in forbidden directories');
             return;
         }
-        await octokit.pulls.merge({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: pullRequestNumber,
-        });
-        core.info('Pull request merged successfully');
+        // await octokit.pulls.merge({
+        //   owner: github.context.repo.owner,
+        //   repo: github.context.repo.repo,
+        //   pull_number: pullRequestNumber,
+        // });
+        // core.info('Pull request merged successfully');
         const labelName = `Small pull request automatically created and merged to ${pullRequest.head.ref}`;
         try {
             await octokit.issues.createLabel({
@@ -84,12 +84,12 @@ async function run() {
                 core.setFailed(`Action failed with an unknown error`);
             }
         }
-        await octokit.issues.addLabels({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: pullRequestNumber,
-            labels: [labelName],
-        });
+        // await octokit.issues.addLabels({
+        //   owner: github.context.repo.owner,
+        //   repo: github.context.repo.repo,
+        //   issue_number: pullRequestNumber,
+        //   labels: [labelName],
+        // });
         const { data: newPullRequest } = await octokit.pulls.create({
             owner: github.context.repo.owner,
             repo: github.context.repo.repo,
