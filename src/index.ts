@@ -24,9 +24,8 @@ async function run() {
       pull_number: pullRequestNumber,
     });
 
-    if (pullRequest.head.ref.startsWith(prPrefix)) {
+    if (!pullRequest.head.ref.startsWith(prPrefix)) {
       core.info(`Pull request source branch "${pullRequest.head.ref}" does not start with "${prPrefix}". This pull request does not meet auto merging criteria.`);
- 
       return;
     }
 
