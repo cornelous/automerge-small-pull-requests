@@ -25,7 +25,7 @@ async function run() {
     });
 
     if (pullRequest.head.ref.startsWith(prPrefix)) {
-      core.setFailed(`Pull request title "${pullRequest.head.ref}" does not start with "${prPrefix}". This pull request does not meet auto merging criteria.`);
+      core.info(`Pull request source branch "${pullRequest.head.ref}" does not start with "${prPrefix}". This pull request does not meet auto merging criteria.`);
  
       return;
     }
