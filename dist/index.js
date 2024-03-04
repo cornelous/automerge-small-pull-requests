@@ -44,8 +44,12 @@ async function run() {
             repo: github.context.repo.repo,
             pull_number: pullRequestNumber,
         });
+        //declare can_auto_merge variable and set it to true  
+        core.setOutput('can_auto_merge', true);
         if (!pullRequest.head.ref.startsWith(prPrefix)) {
             core.info(`Pull request source branch "${pullRequest.head.ref}" does not start with "${prPrefix}". This pull request does not meet auto merging criteria.`);
+            // declare variable can_auto_merge and set it to false  
+            core.setOutput('can_auto_merge', false);
             return;
         }
         const { data: files } = await octokit.pulls.listFiles({
@@ -55,61 +59,67 @@ async function run() {
         });
         if (files.length >= maxFiles) {
             core.warning(`Pull request has changes in ${maxFiles} or more files`);
+            core.setOutput('can_auto_merge', false);
             return;
         }
         if (files.some(file => forbiddenDirectories.some(dir => file.filename.startsWith(dir.trim())))) {
             core.warning('Pull request has changes in forbidden directories');
+            core.setOutput('can_auto_merge', false);
             return;
         }
-        await octokit.pulls.merge({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: pullRequestNumber,
-        });
-        core.info('Pull request automatically merged successfully');
-        // also add comment to PR
-        const labelName = "auto-merged";
-        try {
-            await octokit.issues.createLabel({
+        // read core.setOutput('can_auto_merge') value
+        const can_auto_merge = core.getInput('can_auto_merge');
+        if (can_auto_merge == 'true') {
+            await octokit.pulls.merge({
                 owner: github.context.repo.owner,
                 repo: github.context.repo.repo,
-                name: labelName,
-                color: 'FFA500',
+                pull_number: pullRequestNumber,
             });
-        }
-        catch (error) {
-            if (error instanceof Error) {
-                core.setFailed(`Action failed with error ${error.message}`);
+            core.info('Pull request automatically merged successfully');
+            // also add comment to PR
+            const labelName = "auto-merged";
+            try {
+                await octokit.issues.createLabel({
+                    owner: github.context.repo.owner,
+                    repo: github.context.repo.repo,
+                    name: labelName,
+                    color: 'FFA500',
+                });
             }
-            else {
-                core.setFailed(`Action failed with an unknown error`);
+            catch (error) {
+                if (error instanceof Error) {
+                    core.setFailed(`Action failed with error ${error.message}`);
+                }
+                else {
+                    core.setFailed(`Action failed with an unknown error`);
+                }
             }
+            await octokit.issues.addLabels({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                issue_number: pullRequestNumber,
+                labels: [labelName],
+            });
+            const { data: newPullRequest } = await octokit.pulls.create({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                title: `Merge ${pullRequest.head.ref} to ${mergeBackBranch}`,
+                head: pullRequest.head.ref,
+                base: mergeBackBranch,
+            });
+            await octokit.pulls.merge({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                pull_number: newPullRequest.number,
+            });
+            await octokit.issues.addLabels({
+                owner: github.context.repo.owner,
+                repo: github.context.repo.repo,
+                issue_number: newPullRequest.number,
+                labels: [labelName],
+            });
+            core.info('New pull request to merge back branch created, merged, and labeled successfully');
         }
-        await octokit.issues.addLabels({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: pullRequestNumber,
-            labels: [labelName],
-        });
-        const { data: newPullRequest } = await octokit.pulls.create({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            title: `Merge ${pullRequest.head.ref} to ${mergeBackBranch}`,
-            head: pullRequest.head.ref,
-            base: mergeBackBranch,
-        });
-        await octokit.pulls.merge({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            pull_number: newPullRequest.number,
-        });
-        await octokit.issues.addLabels({
-            owner: github.context.repo.owner,
-            repo: github.context.repo.repo,
-            issue_number: newPullRequest.number,
-            labels: [labelName],
-        });
-        core.info('New pull request to merge back branch created, merged, and labeled successfully');
     }
     catch (error) {
         core.setFailed(`Action failed with error ${error}`);
