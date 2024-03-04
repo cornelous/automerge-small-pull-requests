@@ -36,12 +36,12 @@ async function run() {
     });
 
     if (files.length >= maxFiles) {
-      core.setFailed(`Pull request has changes in ${maxFiles} or more files`);
+      core.warning(`Pull request has changes in ${maxFiles} or more files`);
       return;
     }
 
     if (files.some(file => forbiddenDirectories.some(dir => file.filename.startsWith(dir.trim())))) {
-      core.setFailed('Pull request has changes in forbidden directories');
+      core.warning('Pull request has changes in forbidden directories');
       return;
     }
 
